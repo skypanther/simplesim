@@ -1,0 +1,21 @@
+{
+  "name": "simplesim",
+  "version": "0.0.1",
+  "description": "Simplifies launching Titanium apps to the simulator/emulator by allowing the use of aliases rather than UDIDs / emulator names.",
+  "main": "index.js",
+  "scripts": {
+    "test": "test.js"
+  },
+  "keywords": [
+    "titanium",
+    "appcelerator"
+  ],
+  "author": "Tim Poulsen, <tpoulsen@appcelerator.com>",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^0.9.0",
+    "colors": "^1.0.3",
+    "underscore": "~1.7.0",
+    "wrench": "^1.5.8"
+  }
+}
