@@ -1,11 +1,3 @@
-/*// check that the CLI is installed as required
-try {
-	console.log(require.resolve('titanium') + ' is installed, proceeding...');
-} catch(e) {
-	console.error('The Titanium CLI is not installed. Please install with `[sudo] npm install -g titanium`');
-	process.exit(e.code);
-}
-*/
 var _ = require('underscore')._,
 	async = require('async'),
 	colors = require('colors'),
@@ -19,9 +11,13 @@ var _ = require('underscore')._,
 		emulators: [],
 		simulators: [],
 	},
+	hooksFolder = path.join(path.resolve('simplesim'), '..', 'hooks'),
 	tiinfo,
 	titaniumConfigFolder = path.resolve(getUserHome(), ".titanium"),
 	configFile = path.join(titaniumConfigFolder, 'simplesim.json');
+
+exec('ti config -r paths.hooks ' + hooksFolder);
+exec('ti config -a paths.hooks ' + hooksFolder);
 
 async.series([getAndroidEmulators, getiOSSimulators], done);
 
