@@ -1,4 +1,4 @@
-var _ = require('underscore')._,
+var _ = require('./node_modules/underscore')._,
 	async = require('async'),
 	colors = require('colors'),
 	exec = require('child_process').exec,
@@ -16,10 +16,37 @@ var _ = require('underscore')._,
 	titaniumConfigFolder = path.resolve(getUserHome(), ".titanium"),
 	configFile = path.join(titaniumConfigFolder, 'simplesim.json');
 
-exec('ti config -r paths.hooks ' + hooksFolder);
-exec('ti config -a paths.hooks ' + hooksFolder);
-
-async.series([getAndroidEmulators, getiOSSimulators], done);
+switch(process.argv.slice(2)[0]) {
+	case '-v':
+	case '--version':
+			console.log(require('./package.json').version);
+			process.exit();
+		break;
+	case '-l':
+	case 'list':
+	case '--list':
+		banner();
+		summary();
+		break;
+	case '-a':
+	case '-g':
+	case 'generate':
+	case '--generate-aliases':
+		exec('ti config -r paths.hooks ' + hooksFolder);
+		async.series([getAndroidEmulators, getiOSSimulators], done);
+		break;
+	case '-h':
+	case '--help':
+	default:
+			console.log('\nSimpleSim version ' + require('./package.json').version);
+			console.log('\nCreate the list of aliases with:');
+			console.log('    simplesim generate'.yellow);
+			console.log('Then run your project using the alias:')
+			console.log('    ti build -p <platform> -C <alias>'.yellow);
+			console.log('\nGet a list of aliases with:')
+			console.log('    simplesim list'.yellow);
+			console.log('\nFor more information, visit https://github.com/skypanther/simplesim');
+}
 
 
 function getAndroidEmulators(done) {
@@ -70,6 +97,7 @@ function done() {
 	banner();
 	save();
 	summary();
+	exec('ti config -a paths.hooks ' + hooksFolder);
 }
 
 function banner() {
@@ -104,6 +132,9 @@ function save() {
 }
 
 function summary() {
+	if(config.emulators.length === 0) {
+		config = JSON.parse(fs.readFileSync(configFile));
+	}
 	console.log("Emulator aliases (full name):".yellow);
 	_.each(config.emulators, function(emu) {
 		console.log("   " + emu.alias + spacer(emu.alias, 20) + emu.name);
