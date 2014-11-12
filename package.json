@@ -1,6 +1,6 @@
 {
   "name": "simplesim",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Simplifies launching Titanium apps to the simulator/emulator by allowing the use of aliases rather than UDIDs / emulator names.",
   "main": "index.js",
   "keywords": [

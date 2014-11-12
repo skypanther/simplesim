@@ -11,7 +11,7 @@ var _ = require('./node_modules/underscore')._,
 		emulators: [],
 		simulators: [],
 	},
-	hooksFolder = path.join(path.resolve('simplesim'), '..', 'hooks'),
+	hooksFolder = path.join(path.dirname(__filename), 'hooks'),
 	tiinfo,
 	titaniumConfigFolder = path.resolve(getUserHome(), ".titanium"),
 	configFile = path.join(titaniumConfigFolder, 'simplesim.json');
@@ -34,6 +34,10 @@ switch(process.argv.slice(2)[0]) {
 	case '--generate-aliases':
 		exec('ti config -r paths.hooks ' + hooksFolder);
 		async.series([getAndroidEmulators, getiOSSimulators], done);
+		break;
+	case 'uninstall':
+		exec('ti config -r paths.hooks ' + hooksFolder);
+		removeConfigFile();
 		break;
 	case '-h':
 	case '--help':
@@ -153,6 +157,26 @@ function summary() {
 	}
 }
 
+function removeConfigFile() {
+	// remove the config file
+	fs.exists(configFile, function (exists) {
+		if(exists) {
+			fs.unlink(configFile, function(err) {
+				if(err) {
+					console.error('Unable to remove the SimpleSim aliases file');
+					if(err.errno === 3) {
+						console.error('SimpleSim uninstall does not have permissions to remove the alias file');
+					}
+						console.error('Please delete ' + configFile + ' manually.')
+				} else {
+					console.log('SimpleSim: alias file removed');
+				}
+			})
+		}
+	});
+}
+
+// a couple of helper functions
 function getUserHome() {
 	return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }

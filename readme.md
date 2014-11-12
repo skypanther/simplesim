@@ -68,6 +68,25 @@ simplesim --version
 simplesim -v
 ```
 
+## Uninstalling SimpleSim
+
+To uninstall SimpleSim:
+
+```shell
+# First, remove the CLI hook and config file
+simplesim uninstall
+
+# Second, remove SimpleSim itself
+sudo npm r -g simplesim
+```
+
+Manual method:
+
+1. Edit your USERHOME/.titanium/config.json file. In the "hooks" section, delete the line referencing the simplesim/hooks folder and the comma at the end of the preceding line.
+2. Delete the USERHOME/.titanium/simplesim.json file.
+3. Uninstall the module using `npm r` as shown above.
+
+
 # How it works
 
 SimpleSim has two parts: a script to build a list of aliases for UDIDs / AVD names, and a CLI plug-in. The alias-building script uses the `ti info` command to retrieve the details from your Titanium configuration. It parses the results and writes them to a JSON file in the .titanium folder in your home directory.
