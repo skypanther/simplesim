@@ -18,12 +18,24 @@ exports.init = function (logger, config, cli, nodeappc) {
 		}
 		simplesim = require(configFile);
 		if(cli && cli.globalContext && cli.globalContext.argv) {
-			if(cli.globalContext.argv.p || cli.globalContext.argv.platform) {
-				buildPlatform = cli.globalContext.argv.p || cli.globalContext.argv.platform;
-			}
 			if(cli.globalContext.argv.C || cli.globalContext.argv['device-id']) {
 				deviceId = cli.globalContext.argv.C || cli.globalContext.argv['device-id'];
 			}
+			if(cli.globalContext.argv.p || cli.globalContext.argv.platform) {
+				buildPlatform = cli.globalContext.argv.p || cli.globalContext.argv.platform;
+			}
+			else {
+				//try to detect the platform from the simplesim config file
+				_.each(platforms, function(p, key) {
+					if (_.find(simplesim[p],{ alias: deviceId})) {
+						cli.argv.$_.push('-p');
+						cli.argv.$_.push(key);
+						cli.globalContext.argv.p = key;
+						buildPlatform = key;
+					}
+				});
+			}
+
 			// grab the right sim/emu
 			sim = _.where(simplesim[platforms[buildPlatform]], { alias: deviceId});
 			if(!sim || sim.length === 0) { return; }
