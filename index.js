@@ -133,7 +133,13 @@ function save() {
 
 function summary() {
 	if(config.emulators.length === 0) {
-		config = JSON.parse(fs.readFileSync(configFile));
+		if (fs.existsSync(configFile)) {
+			config = JSON.parse(fs.readFileSync(configFile));
+		}
+		else {
+			console.error(('Config file not found, please ensure you run '.red+'simplesim generate'.cyan +' first.'.red) + '\n');
+			process.exit(1);
+		}
 	}
 	console.log("Emulator aliases (full name):".yellow);
 	_.each(config.emulators, function(emu) {
