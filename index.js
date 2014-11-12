@@ -51,7 +51,7 @@ switch(process.argv.slice(2)[0]) {
 
 function getAndroidEmulators(done) {
 	// For all platforms, check for Android emulators
-	exec('ti info -t android -o json --no-banner --no-progress-bars --no-colors',
+	exec('ti info -t android -o json --no-banner --no-progress-bars --no-colors', {maxBuffer: 1024 * 1024},
 		function (error, stdout, stderr) {
 			if(error) {
 				throw error;
@@ -72,7 +72,7 @@ function getAndroidEmulators(done) {
 function getiOSSimulators(done) {
 	// For OS X, check for iOS simulators
 	if(process.platform === 'darwin') {
-		exec('ti info -t ios -o json --no-banner --no-progress-bars --no-colors',
+		exec('ti info -t ios -o json --no-banner --no-progress-bars --no-colors', {maxBuffer: 1024 * 1024},
 			function (error, stdout, stderr) {
 				if(error) {
 					throw error;
@@ -133,7 +133,13 @@ function save() {
 
 function summary() {
 	if(config.emulators.length === 0) {
-		config = JSON.parse(fs.readFileSync(configFile));
+		if (fs.existsSync(configFile)) {
+			config = JSON.parse(fs.readFileSync(configFile));
+		}
+		else {
+			console.error(('Config file not found, please ensure you run '.red+'simplesim generate'.cyan +' first.'.red) + '\n');
+			process.exit(1);
+		}
 	}
 	console.log("Emulator aliases (full name):".yellow);
 	_.each(config.emulators, function(emu) {
