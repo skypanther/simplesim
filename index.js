@@ -51,7 +51,7 @@ switch(process.argv.slice(2)[0]) {
 
 function getAndroidEmulators(done) {
 	// For all platforms, check for Android emulators
-	exec('ti info -t android -o json --no-banner --no-progress-bars --no-colors',
+	exec('ti info -t android -o json --no-banner --no-progress-bars --no-colors', {maxBuffer: 1024 * 1024},
 		function (error, stdout, stderr) {
 			if(error) {
 				throw error;
@@ -72,7 +72,7 @@ function getAndroidEmulators(done) {
 function getiOSSimulators(done) {
 	// For OS X, check for iOS simulators
 	if(process.platform === 'darwin') {
-		exec('ti info -t ios -o json --no-banner --no-progress-bars --no-colors',
+		exec('ti info -t ios -o json --no-banner --no-progress-bars --no-colors', {maxBuffer: 1024 * 1024},
 			function (error, stdout, stderr) {
 				if(error) {
 					throw error;
