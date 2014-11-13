@@ -12,6 +12,8 @@ var _ = require('./node_modules/underscore')._,
 		simulators: [],
 	},
 	hooksFolder = path.join(path.dirname(__filename), 'hooks'),
+	maxIosVersion,
+	suffix = '',
 	tiinfo,
 	titaniumConfigFolder = path.resolve(getUserHome(), ".titanium"),
 	configFile = path.join(titaniumConfigFolder, 'simplesim.json');
@@ -83,10 +85,15 @@ function getiOSSimulators(done) {
 				} else {
 					tiinfo = JSON.parse(stdout);
 					_.each(tiinfo.ios.simulators, function(ver) {
+						if(!maxIosVersion) {
+							maxIosVersion = ver;
+						} else if(ver < maxIosVersion) {
+							suffix = '_' + ver.replace(/\./g, '_');
+						}
 						_.each(ver, function(sim) {
 							config.simulators.push({
 								name: sim.name,
-								alias: sim.name.replace(/\s/g, "_").toLowerCase(),
+								alias: sim.name.replace(/\s/g, "_").toLowerCase() + suffix,
 								udid: sim.udid
 							});
 						});
@@ -183,6 +190,8 @@ function getUserHome() {
 
 function spacer(str, col2) {
 	if(!col2) col2 = 20;
-	if(col2 - str.length <= 1) { col2 += 5; }
+	while(col2 - str.length <=1) {
+		col2 += 3;
+	}
 	return (new Array(col2 - str.length || 0)).join(' ');
 }

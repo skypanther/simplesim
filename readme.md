@@ -1,6 +1,6 @@
 # SimpleSim
 
-> **Alpha** - Tested on OS X only, with working Xcode and Android configurations. Not tested on Windows, or in the absence of Xcode/Android environments. Use at your own peril! :-)
+> **Alpha** - Tested on OS X only, with working Xcode and Android configurations. Not tested on Windows, or in the absence of Xcode/Android environments. Use at your own peril! :-) Kidding, please open an issue if you have a problem with it.
 
 Simplifies launching Titanium apps to the simulator/emulator by allowing the use of aliases rather than UDIDs / emulator names.
 
@@ -91,4 +91,10 @@ Manual method:
 
 SimpleSim has two parts: a script to build a list of aliases for UDIDs / AVD names, and a CLI plug-in. The alias-building script uses the `ti info` command to retrieve the details from your Titanium configuration. It parses the results and writes them to a JSON file in the .titanium folder in your home directory.
 
-The CLI plug-in hooks into the CLI at the `cli:go` step, which is before the CLI arguments are parsed. It looks for two required arguments:
+The CLI plug-in hooks into the CLI at the `cli:go` step, which is before the CLI arguments are parsed. It looks for the required `-C` (or `--device-id`) argument. If found, it looks up the argument's value in the JSON file. If there's a match, that's substituted for the original value of the argument and the build proceeds. If there's not a match (like if you entered an actual UDID), SimpleSim gives up and the build procees.
+
+# Changelog
+
+* 0.0.2 - Initial NPM release
+* 0.0.3 - Resolve stack error (issue #1), added uninstall command, change to hook path
+* 0.0.4 - Autodetect build platform (PR#5), issue #4 (invalid array length), issue #3 (duplicate sim names w/ multiple iOS versions present)
