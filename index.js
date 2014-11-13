@@ -11,7 +11,9 @@ var _ = require('./node_modules/underscore')._,
 		emulators: [],
 		simulators: [],
 	},
-	hooksFolder = path.join(path.resolve('simplesim'), '..', 'hooks'),
+	hooksFolder = path.join(path.dirname(__filename), 'hooks'),
+	maxIosVersion,
+	suffix = '',
 	tiinfo,
 	titaniumConfigFolder = path.resolve(getUserHome(), ".titanium"),
 	configFile = path.join(titaniumConfigFolder, 'simplesim.json');
@@ -34,6 +36,10 @@ switch(process.argv.slice(2)[0]) {
 	case '--generate-aliases':
 		exec('ti config -r paths.hooks ' + hooksFolder);
 		async.series([getAndroidEmulators, getiOSSimulators], done);
+		break;
+	case 'uninstall':
+		exec('ti config -r paths.hooks ' + hooksFolder);
+		removeConfigFile();
 		break;
 	case '-h':
 	case '--help':
@@ -79,10 +85,15 @@ function getiOSSimulators(done) {
 				} else {
 					tiinfo = JSON.parse(stdout);
 					_.each(tiinfo.ios.simulators, function(ver) {
+						if(!maxIosVersion) {
+							maxIosVersion = ver;
+						} else if(ver < maxIosVersion) {
+							suffix = '_' + ver.replace(/\./g, '_');
+						}
 						_.each(ver, function(sim) {
 							config.simulators.push({
 								name: sim.name,
-								alias: sim.name.replace(/\s/g, "_").toLowerCase(),
+								alias: sim.name.replace(/\s/g, "_").toLowerCase() + suffix,
 								udid: sim.udid
 							});
 						});
@@ -153,12 +164,34 @@ function summary() {
 	}
 }
 
+function removeConfigFile() {
+	// remove the config file
+	fs.exists(configFile, function (exists) {
+		if(exists) {
+			fs.unlink(configFile, function(err) {
+				if(err) {
+					console.error('Unable to remove the SimpleSim aliases file');
+					if(err.errno === 3) {
+						console.error('SimpleSim uninstall does not have permissions to remove the alias file');
+					}
+						console.error('Please delete ' + configFile + ' manually.')
+				} else {
+					console.log('SimpleSim: alias file removed');
+				}
+			})
+		}
+	});
+}
+
+// a couple of helper functions
 function getUserHome() {
 	return process.env[(process.platform == 'win32') ? 'USERPROFILE' : 'HOME'];
 }
 
 function spacer(str, col2) {
 	if(!col2) col2 = 20;
-	if(col2 - str.length <= 1) { col2 += 5; }
+	while(col2 - str.length <=1) {
+		col2 += 3;
+	}
 	return (new Array(col2 - str.length || 0)).join(' ');
 }
