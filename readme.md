@@ -22,6 +22,13 @@ Generically:
 ti build -p <platform> -C <alias>
 ```
 
+You can even ommit the platform and SimpleSim will try to detect it based on the emulator/simulator
+```shell
+ti build -C <alias>
+```
+
+
+
 ## Setup
 
 Install from NPM or clone the repo and install from your local directory.
