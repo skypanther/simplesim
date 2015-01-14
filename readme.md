@@ -1,7 +1,5 @@
 # SimpleSim
 
-> **Alpha** - Tested on OS X only, with working Xcode and Android configurations. Not tested on Windows, or in the absence of Xcode/Android environments. Use at your own peril! :-) Kidding, please open an issue if you have a problem with it.
-
 Simplifies launching Titanium apps to the simulator/emulator by allowing the use of aliases rather than UDIDs / emulator names.
 
 Turns this:
@@ -65,6 +63,11 @@ simplesim generate
 simplesim -g
 simplesim --generate-aliases
 
+// alternatively, omit the geny_ or avd_ prefixes
+simplesim generate --no-prefix
+simplesim -g --no-prefix
+simplesim --generate-aliases --no-prefix
+
 // list the aliases without rebuilding
 simplesim list
 simplesim --list
@@ -102,6 +105,36 @@ The CLI plug-in hooks into the CLI at the `cli:go` step, which is before the CLI
 
 # Changelog
 
-* 0.0.2 - Initial NPM release
-* 0.0.3 - Resolve stack error (issue #1), added uninstall command, change to hook path
+* 0.1.0 - Change to name generation to address issue #8, added --no-prefix flag, added license
 * 0.0.4 - Autodetect build platform (PR#5), issue #4 (invalid array length), issue #3 (duplicate sim names w/ multiple iOS versions present)
+* 0.0.3 - Resolve stack error (issue #1), added uninstall command, change to hook path
+* 0.0.2 - Initial NPM release
+
+# To Do
+
+So far, tested on OS X only, with working Xcode and Android configurations. Needs to be tested on Windows and with incomplete configurations (e.g. OS X w/out Android set up).
+
+# License
+
+The MIT License (MIT)
+
+Copyright (c) 2014 Tim Poulsen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
