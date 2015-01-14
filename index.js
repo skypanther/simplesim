@@ -18,6 +18,21 @@ var _ = require('./node_modules/underscore')._,
 	titaniumConfigFolder = path.resolve(getUserHome(), ".titanium"),
 	configFile = path.join(titaniumConfigFolder, 'simplesim.json');
 
+var commonNames = {
+	's2 ': 's2',
+	's3 ': 's3',
+	's4 ': 's4',
+	's5 ': 's5',
+	'galaxy nexus': 'gnex',
+	'nexus one': 'nexusone',
+	'nexus s': 'nexuss',
+	'galaxy tab': 'gtab',
+	'samsung note': 'note',
+	'motorola moto g': 'motog',
+	'motorola razr': 'razr',
+	'motorola droid': 'droid'
+}
+
 switch(process.argv.slice(2)[0]) {
 	case '-v':
 	case '--version':
@@ -66,7 +81,7 @@ function getAndroidEmulators(done) {
 				_.each(tiinfo.android.emulators, function(emu) {
 					config.emulators.push({
 						name: (emu.device) ? emu.device : emu.name,
-						alias: (emu.type==='avd') ? emu.name.replace(/\./g, "_") : "geny_" + ((emu["api-level"]) ? emu["api-level"] + "_" : "") + emu.target.replace(/\./g, "_"),
+						alias: makeAlias(emu),
 						udid: emu.name
 					});
 				});
@@ -88,12 +103,12 @@ function getiOSSimulators(done) {
 						if(!maxIosVersion) {
 							maxIosVersion = ver;
 						} else if(ver < maxIosVersion) {
-							suffix = '_' + ver.replace(/\./g, '_');
+							suffix = '_' + ver.replace(/\./g, '');
 						}
 						_.each(ver, function(sim) {
 							config.simulators.push({
 								name: sim.name,
-								alias: sim.name.replace(/\s/g, "_").toLowerCase() + suffix,
+								alias: sim.name.replace(/\s/g, "").toLowerCase() + suffix,
 								udid: sim.udid
 							});
 						});
@@ -152,14 +167,14 @@ function summary() {
 			process.exit(1);
 		}
 	}
-	console.log("Emulator aliases (full name):".yellow);
+	console.log("Emulator aliases     Full name".yellow);
 	_.each(config.emulators, function(emu) {
-		console.log("   " + emu.alias + spacer(emu.alias, 20) + emu.name);
+		console.log(emu.alias + spacer(emu.alias, 22) + emu.name);
 	});
 	if(config.simulators.length) {
-		console.log("\nSimulator aliases (full name - UDID):".yellow);
+		console.log("\nSimulator aliases    Full name         (UDID)".yellow);
 		_.each(config.simulators, function(sim) {
-			console.log("   " + sim.alias + spacer(sim.alias, 20) + sim.name + spacer(sim.name, 15) + "(" + sim.udid + ")");
+			console.log(sim.alias + spacer(sim.alias, 22) + sim.name + spacer(sim.name, 19) + "(" + sim.udid + ")");
 		});
 	}
 }
@@ -170,11 +185,11 @@ function removeConfigFile() {
 		if(exists) {
 			fs.unlink(configFile, function(err) {
 				if(err) {
-					console.error('Unable to remove the SimpleSim aliases file');
+					console.error('Unable to remove the SimpleSim aliases file'.red);
 					if(err.errno === 3) {
-						console.error('SimpleSim uninstall does not have permissions to remove the alias file');
+						console.error('SimpleSim uninstall does not have permissions to remove the alias file'.red);
 					}
-						console.error('Please delete ' + configFile + ' manually.')
+						console.error('Please delete ' + configFile + ' manually.'.red)
 				} else {
 					console.log('SimpleSim: alias file removed');
 				}
@@ -194,4 +209,33 @@ function spacer(str, col2) {
 		col2 += 3;
 	}
 	return (new Array(col2 - str.length || 0)).join(' ');
+}
+
+function makeAlias(emu) {
+	if(typeof emu !== 'object' || !emu.type) {
+		console.error('Invalid emulator type. Is your Android environment configured correctly?'.red);
+		process.exit(1);
+	}
+	var type = 'avd_',
+		found,
+		version = ((emu["sdk-version"]) ? emu['sdk-version'].replace(/\./g, "") : emu.target.replace(/\./g, ""));
+	if(emu.type === 'avd') {
+		found = emu.device.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+	} else {
+		type = 'geny_';
+		found = emu.name.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+	}
+	if(process.argv.slice(2)[1] === '--no-prefix') {
+		type = '';
+	}
+	if(found) {
+		if(commonNames[found[0].toLowerCase()]) {
+			return type + commonNames[found[0].toLowerCase()] + '_' + version;
+		} else {
+			return type + found[0].replace(/\.|\s*/g, "_") + '_' + version;
+		}
+
+	} else {
+		return type + emu.name.split(' ')[0] + '_' + version
+	}
 }
