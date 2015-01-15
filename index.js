@@ -220,7 +220,11 @@ function makeAlias(emu) {
 		found,
 		version = ((emu["sdk-version"]) ? emu['sdk-version'].replace(/\./g, "") : emu.target.replace(/\./g, ""));
 	if(emu.type === 'avd') {
-		found = emu.name.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+		if(emu.device) {
+			found = emu.device.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+		} else {
+			found = emu.name.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+		}
 		if(!found) {
 			// probably a Ti-generated avd in form titanium_10_WVGA854_armeabi-v7a
 			found = [emu.id];
@@ -232,7 +236,6 @@ function makeAlias(emu) {
 	if(process.argv.slice(2)[1] === '--no-prefix') {
 		type = '';
 	}
-console.log(found)
 	if(found) {
 		if(commonNames[found[0].toLowerCase()]) {
 			return type + commonNames[found[0].toLowerCase()] + '_' + version;
@@ -243,7 +246,7 @@ console.log(found)
 //			return found[0].replace('titanium', 'ti').replace('')
 //			return 'ti' + emu['api-level'] + (emu.skin || '');
 		} else {
-			return type + found[0].replace(/\.|\s*/g, "_") + '_' + version;
+			return type + found[0].replace(/\.|\s*/g, "") + '_' + version;
 		}
 
 	} else {
