@@ -131,7 +131,7 @@ function banner() {
 	console.log('* SimpleSim - simplified app launching for Titanium turns this    *'.cyan);
 	console.log('*      ti build -p ios -C 779CA28E-FE7D-4B2F-AF49-48CBCBC7B8D5    *'.cyan)
 	console.log('* into this                                                       *'.cyan);
-	console.log('*      ti build -p ios -C ipad_2                                  *'.cyan)
+	console.log('*      ti build -p ios -C ipad2                                   *'.cyan)
 	console.log('* Generically:                                                    *'.cyan);
 	console.log('*      '.cyan + 'ti build -p <platform> -C <alias>'.yellow + '                          *'.cyan)
 	console.log('*******************************************************************\n'.cyan);
@@ -220,7 +220,11 @@ function makeAlias(emu) {
 		found,
 		version = ((emu["sdk-version"]) ? emu['sdk-version'].replace(/\./g, "") : emu.target.replace(/\./g, ""));
 	if(emu.type === 'avd') {
-		found = emu.device.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+		found = emu.name.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
+		if(!found) {
+			// probably a Ti-generated avd in form titanium_10_WVGA854_armeabi-v7a
+			found = [emu.id];
+		}
 	} else {
 		type = 'geny_';
 		found = emu.name.match(/s\d\s|Galaxy\sNexus|Nexus(\s{1}\w*)*|Motorola(\s{1}\w*)*/i);
@@ -228,9 +232,16 @@ function makeAlias(emu) {
 	if(process.argv.slice(2)[1] === '--no-prefix') {
 		type = '';
 	}
+console.log(found)
 	if(found) {
 		if(commonNames[found[0].toLowerCase()]) {
 			return type + commonNames[found[0].toLowerCase()] + '_' + version;
+		} else if(found[0].indexOf('titanium') !== -1) {
+			//titanium_14_WVGA854_armeabi-v7a
+			var tiavd = found[0].split('_');
+			return 'ti' + tiavd[1] + tiavd[2] + (tiavd[3] && tiavd[3].indexOf('arm')!==-1 ? 'arm' : tiavd[3] || '');
+//			return found[0].replace('titanium', 'ti').replace('')
+//			return 'ti' + emu['api-level'] + (emu.skin || '');
 		} else {
 			return type + found[0].replace(/\.|\s*/g, "_") + '_' + version;
 		}

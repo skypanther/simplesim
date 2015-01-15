@@ -11,7 +11,7 @@ ti build -p ios -C 779CA28E-FE7D-4B2F-AF49-48CBCBC7B8D5
 Into this:
 
 ```shell
-ti build -p ios -C ipad_2
+ti build -p ios -C ipad2
 ```
 
 Generically:
@@ -105,6 +105,7 @@ The CLI plug-in hooks into the CLI at the `cli:go` step, which is before the CLI
 
 # Changelog
 
+* 0.1.1 - Fix for issue #10 -- errors generating names for Titanium-generated AVDs
 * 0.1.0 - Change to name generation to address issue #8, added --no-prefix flag, added license
 * 0.0.4 - Autodetect build platform (PR#5), issue #4 (invalid array length), issue #3 (duplicate sim names w/ multiple iOS versions present)
 * 0.0.3 - Resolve stack error (issue #1), added uninstall command, change to hook path
